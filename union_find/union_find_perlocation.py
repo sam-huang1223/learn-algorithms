@@ -39,7 +39,7 @@ class Perlocation(UF):
 
     @staticmethod
     def read_input(fileName):
-        with open('./testing_files/perlocation/{file}'.format(file=fileName)) as inp:
+        with open('../testing_files/perlocation/{file}'.format(file=fileName)) as inp:
             n = int(inp.readline())
             perlocates = bool(int(inp.readline()))
             on_objects = [[int(coord) for coord in obj.strip('\n').split(' ')] for obj in inp.readlines()]
@@ -99,7 +99,7 @@ class DrawTree:
     def __init__(self, root, children, outputName):
         self.graph = pydot.Dot(graph_type='digraph')
         self.add_edges(root, children)
-        self.graph.write_png('output_files/perlocation/{}_root{}.png'.format(outputName,root))
+        self.graph.write_png('../output_files/perlocation/{}_root{}.png'.format(outputName,root))
 
     def add_edges(self, parent, children):
         for child in children:
@@ -111,11 +111,12 @@ class DrawTree:
 
 # TODO document this
 
-testCase = 'input4_fails'
-result = Perlocation('{}.txt'.format(testCase))
-parsed = ParseResult(result.data)
+if __name__ == '__main__':
+    testCase = 'input4_fails'
+    result = Perlocation('{}.txt'.format(testCase))
+    parsed = ParseResult(result.data)
 
-if DRAW_TREE:
-    set_graphviz_path()
-    for num, tree in enumerate(parsed.trees.keys()):
-        DrawTree(tree, parsed.trees[tree], testCase)
+    if DRAW_TREE:
+        set_graphviz_path()
+        for num, tree in enumerate(parsed.trees.keys()):
+            DrawTree(tree, parsed.trees[tree], testCase)
