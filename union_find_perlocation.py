@@ -1,8 +1,11 @@
-import pydot_ng as pydot
+import pydotplus as pydot
 from collections import Counter
 
+from union_find import UF
+from config import DRAW_TREE, set_graphviz_path
 
-class Perlocation:
+
+class Perlocation(UF):
     def __init__(self, inputFile):
         n, succeeds, on_objects = self.read_input(inputFile)
         self.input = [0 for _ in range(n*n)]
@@ -28,9 +31,12 @@ class Perlocation:
             if bool(self.input[idx]):
                 self.connect_surrounding(idx, n)
 
-        self.perlocated = self.connected(self.data[0], self.data[-1])
-        assert self.perlocated == succeeds, "Perlocation result does not match file input"
-        
+        assert self.connected(self.data[0], self.data[-1]) == succeeds, "Perlocation result does not match file input"
+        if succeeds:
+            print('Perlocation confirmed to be successful')
+        else:
+            print('Perlocation confirmed to fail')
+
     @staticmethod
     def read_input(fileName):
         with open('./testing_files/perlocation/{file}'.format(file=fileName)) as inp:
@@ -55,34 +61,6 @@ class Perlocation:
             if bool(self.input[idx+n]):
                 self.union(self.data[idx], self.data[idx+n])
 
-    def compress_path(self, node, root):
-        while self.data[node] != node:
-            node = self.data[node]
-            self.data[node] = root
-
-    def union(self, p, q):
-        ''' add a connection between objects p and q '''
-        rootp = self._get_root(p)
-        rootq = self._get_root(q)
-        if self.tree_size[rootp] > self.tree_size[rootq]:
-            self.data[q] = rootp
-            self.tree_size[rootp] += self.tree_size[rootq]
-        else:
-            self.data[p] = rootq
-            self.tree_size[rootq] += self.tree_size[rootp]
-    
-    def _get_root(self, value):
-        ''' Finds the root of any given object '''
-        initial_node = value
-        while self.data[value] != value:
-            value = self.data[value]
-        self.compress_path(initial_node, value)
-        return value
-
-    def connected(self, p, q):
-        ''' determine if p and q are in the same component '''
-        return self._get_root(p) == self._get_root(q)
-
 
 class ParseResult:
     def __init__(self, data):
@@ -101,7 +79,8 @@ class ParseResult:
 
         return self._aggregate(trees)
 
-    def _aggregate(self, trees):
+    @staticmethod
+    def _aggregate(trees):
         while True:
             roots = set(trees.keys())
             for root in roots:
@@ -118,9 +97,9 @@ class ParseResult:
 
 class DrawTree:
     def __init__(self, root, children, outputName):
-        self.graph = pydot.Dot(graph_type='graph')
+        self.graph = pydot.Dot(graph_type='digraph')
         self.add_edges(root, children)
-        self.graph.write_png('{}.png'.format(outputName))
+        self.graph.write_png('output_files/perlocation/{}_root{}.png'.format(outputName,root))
 
     def add_edges(self, parent, children):
         for child in children:
@@ -130,16 +109,13 @@ class DrawTree:
             else:
                 self.graph.add_edge(pydot.Edge(parent, child))
 
-
-import os
-os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
-# TODO move whether to draw to config file (also move GraphViz path to config file)
 # TODO document this
 
-testCase = 'input4_succeeds'
+testCase = 'input4_fails'
 result = Perlocation('{}.txt'.format(testCase))
 parsed = ParseResult(result.data)
-for num, tree in enumerate(parsed.trees.keys()):
-    # TODO save trees in separate folder
-    # TODO number trees based on root
-    DrawTree(tree, parsed.trees[tree], testCase)
+
+if DRAW_TREE:
+    set_graphviz_path()
+    for num, tree in enumerate(parsed.trees.keys()):
+        DrawTree(tree, parsed.trees[tree], testCase)

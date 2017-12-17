@@ -1,4 +1,0 @@
-You only really need to use @pytest.mark.usefixtures when you want to invoke a fixture but don't want to have it as an input 
-argument to your test
-https://stackoverflow.com/questions/25559265/pytest-fixture-is-always-returning-a-function
-
