@@ -2,6 +2,7 @@ from random import sample, seed
 import os
 from shutil import rmtree
 from union_find_percolation import Percolation, ParseResult, draw_trees
+from config import DRAW_TREE, set_graphviz_path
 
 seed(15)
 
@@ -20,14 +21,14 @@ class Percolation_MC(Percolation):
             # hit 0.5931777 percolation threshold with n=30 with seed(7) and trials=1000
             print('Trial', i + 1)
             thresholds.append(self.simulate_percolation())
-            if i == trials - 1:
-                path = '../output_files/percolation/n_{n}_t_{t}'.format(n=self.n, t=trials)
-                if os.path.exists(path):
-                    rmtree(path)
-                os.mkdir(path)
-                draw_trees(self.data, '../output_files/percolation/n_{n}_t_{t}/MC_test'.format(n=self.n, t=trials))
-
-                # TODO move all constant file paths to config file
+            if DRAW_TREE:
+                if i == trials - 1:
+                    set_graphviz_path()
+                    path = '../output_files/percolation/n_{n}_t_{t}'.format(n=self.n, t=trials)
+                    if os.path.exists(path):
+                        rmtree(path)
+                    os.mkdir(path)
+                    draw_trees(self.data, '../output_files/percolation/n_{n}_t_{t}/MC_test'.format(n=self.n, t=trials))
 
             super().__init__(n=n)  # resets simulation
 
@@ -58,6 +59,12 @@ class Percolation_MC(Percolation):
             if self.connected(self.data[0], self.data[-1]):
                 return (activation_sequence.index(obj) + 1)/num_objects
 
+    def visualize_activated(self, n):
+        print(self.activated[0])
+        for i in range(n):
+            print(self.activated[i*n+1:(i+1)*n+1])
+        print(self.activated[n*n+1])
+
     def _calculate_tree_size(self, children):
         size = 0
         for child in children:
@@ -68,4 +75,4 @@ class Percolation_MC(Percolation):
         return size + 1  # add 1 to account for the parent
 
 
-Percolation_MC(n=25, trials=100)
+Percolation_MC(n=25, trials=1)

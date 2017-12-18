@@ -10,17 +10,11 @@ class UF:
             value = self.data[value]
         return value
 
-    def visualize_activated(self, n):
-        print(self.activated[0])
-        for i in range(n):
-            print(self.activated[i*n+1:(i+1)*n+1])
-        print(self.activated[n*n+1])
-
     def union(self, p, q):
         """ add a connection between objects p and q """
         rootp = self.get_root(p)
         rootq = self.get_root(q)
-        if self.tree_size[rootp] > self.tree_size[rootq]:
+        if self.tree_size[rootp] > self.tree_size[rootq]:  # always merges smaller tree into larger tree (weighted quick union implementation)
             self.data[rootq] = rootp
             if rootp != rootq:  # do not duplicate combining tree sizes if already in the same tree
                 self.tree_size[rootp] += self.tree_size[rootq]

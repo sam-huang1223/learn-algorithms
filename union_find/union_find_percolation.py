@@ -65,7 +65,6 @@ class Percolation(UF):
                     if self.get_root(self.data[idx + delta]) != self.get_root(self.data[idx]):
                         # to prevent calling union if there is already connection (would mistakenly increase tree_size)
                         self.union(self.data[idx], self.data[idx + delta])
-
         idx_row = ceil(idx/self.n)
         if idx-1 >= 0:
             connect_horizontal(idx, idx_row, -1)
@@ -88,13 +87,11 @@ class ParseResult:
             if parent != idx:
                 if parent not in self.trees.keys():
                     self.trees[parent] = set()
-        
+
         for idx in range(len(self.data)):
             if self.data[idx] in self.trees.keys() and self.data[idx] != idx:
                 self.trees[self.data[idx]].add(idx)
-
         self._aggregate()
-
 
     def _aggregate(self):
         while True:
@@ -145,6 +142,7 @@ def draw_trees(data, name):
     parsed = ParseResult(data)
     for num, tree in enumerate(parsed.trees.keys()):
         DrawTree(tree, parsed.trees[tree], name)
+
 
 if __name__ == '__main__':
     fileName = 'input4_fails'
