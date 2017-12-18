@@ -1,6 +1,6 @@
 import pytest
 
-# TODO write testing suite for testing UF_perlocate with the files
+# TODO write testing suite for testing UF_percolate with the files BEFORE refactoring
 
 def test_union_find(setupUF):
     setupUF.union(4, 6)

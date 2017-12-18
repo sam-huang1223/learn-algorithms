@@ -4,13 +4,17 @@ class UF:
         self.data = [i for i in range(n)]
         self.tree_size = [1 for i in range(n)]
 
-    def _get_root(self, value):
+    def get_root(self, value):
         """ Finds the root of any given object """
-        initial_node = value
         while self.data[value] != value:
             value = self.data[value]
-        self.compress_path(initial_node, value)
         return value
+
+    def visualize_activated(self, n):
+        print(self.activated[0])
+        for i in range(n):
+            print(self.activated[i*n+1:(i+1)*n+1])
+        print(self.activated[n*n+1])
 
     def compress_path(self, node, root):
         """ attempts to minimize height of the tree by setting the parent of a node equal to the root of the node """
@@ -20,16 +24,24 @@ class UF:
 
     def union(self, p, q):
         """ add a connection between objects p and q """
-        rootp = self._get_root(p)
-        rootq = self._get_root(q)
+        rootp = self.get_root(p)
+        rootq = self.get_root(q)
         if self.tree_size[rootp] > self.tree_size[rootq]:
-            self.data[q] = rootp
-            self.tree_size[rootp] += self.tree_size[rootq]
+            self.data[rootq] = rootp
+            #self.compress_path(q, rootp)
+            if rootp != rootq:
+                self.tree_size[rootp] += self.tree_size[rootq]
+            else:
+                self.tree_size[rootp] += 1  # in that case, just adding 1 more node to the tree
         else:
-            self.data[p] = rootq
-            self.tree_size[rootq] += self.tree_size[rootp]
+            self.data[rootp] = rootq
+            #self.compress_path(p, rootq)
+            if rootq != rootp:
+                self.tree_size[rootq] += self.tree_size[rootp]
+            else:
+                self.tree_size[rootq] += 1
 
     def connected(self, p, q):
         """ determine if p and q are in the same component """
-        return self._get_root(p) == self._get_root(q)
+        return self.get_root(p) == self.get_root(q)
 
