@@ -5,82 +5,79 @@ from config import DRAW_TREE, set_graphviz_path
 
 
 class Percolation(UF):
-    def __init__(self, inputFile=None, n=0):
-        if inputFile:
-            n, succeeds, on_objects = self.read_input(inputFile)
+    def __init__(self, inputPath=None, n=0):
+        self.n = n
+        if inputPath:
+            self.n, self.succeeds, on_objects = self.read_input(inputPath)
 
-        self.data = [i for i in range(n * n + 2)]  # save 0 index for first node
-        self.tree_size = [1 for _ in range(n * n + 2)]
-        self.activated = [0 for _ in range(n * n)]
+        num_objects = self.n ** 2
+        self.data = [i for i in range(num_objects + 2)]  # save 0 index for first node
+        self.tree_size = [1 for _ in range(num_objects + 2)]
+        self.activated = [0 for _ in range(num_objects)]
         self.activated.insert(0, 1)
         self.activated.append(1)
 
-        if inputFile:
+        if inputPath:
             for pair in on_objects:
-                self.activated[(pair[0] - 1) + (pair[1] - 1) * n + 1] = 1
+                self.activated[(pair[0] - 1) + (pair[1] - 1) * self.n + 1] = 1
 
-            self.link_top_bottom(n)
+            self.link_top_bottom()
 
             for idx in range(1, len(self.data) - 1):
                 if bool(self.activated[idx]):
-                    self.connect_surrounding(idx, n)
+                    self.connect_surrounding(idx)
 
-            assert self.connected(self.data[0], self.data[-1]) == succeeds, "Percolation result does not match file input"
-            if succeeds:
-                print('Percolation confirmed to be successful')
+            if self.connected(self.data[0], self.data[-1]):
+                print('Percolation succeeded')
             else:
-                print('Percolation confirmed to fail')
+                print('Percolation failed')
 
     @staticmethod
-    def read_input(fileName):
-        with open('../testing_files/percolation/{file}'.format(file=fileName)) as inp:
+    def read_input(filePath):
+        with open(filePath) as inp:
             n = int(inp.readline())
             perlocates = bool(int(inp.readline()))
             on_objects = [[int(coord) for coord in obj.strip('\n').split(' ')] for obj in inp.readlines()]
 
             return n, perlocates, on_objects
 
-    def link_top_bottom(self, n):
-        for i in range(1, n + 1):
+    def link_top_bottom(self):
+        for i in range(1, self.n + 1):
             if bool(self.activated[i]):
                 if self.get_root(self.data[i]) != self.get_root(self.data[0]):
                     self.union(self.data[i], self.data[0])
 
-        for i in range(len(self.data) - n - 1, len(self.data) - 1):
+        for i in range(len(self.data) - self.n - 1, len(self.data) - 1):
             if bool(self.activated[i]):
                 if self.get_root(self.data[i]) != self.get_root(len(self.data) - 1):
                     self.union(self.data[i], len(self.data) - 1)
 
-    def connect_surrounding(self, idx, n):
-        def connect_vertical():
-            pass
+    def connect_surrounding(self, idx):
+        def connect_vertical(idx, delta):
+            if bool(self.activated[idx+delta]):
+                if self.get_root(self.data[idx+delta]) != self.get_root(self.data[idx]):
+                    self.union(self.data[idx], self.data[idx+delta])
 
-        def connect_horizontal():
-            pass
+        def connect_horizontal(idx, idx_row, delta):
+            # check to see if object exists on left & right, connect to it if it is also activated
+            if idx + delta >= 0:
+                if bool(self.activated[idx + delta]) and ceil((idx + delta) / self.n) == idx_row:
+                    if self.get_root(self.data[idx + delta]) != self.get_root(self.data[idx]):
+                        # to prevent calling union if there is already connection (would mistakenly increase tree_size)
+                        self.union(self.data[idx], self.data[idx + delta])
 
-        idx_row = ceil(idx/n)
-        # check to see if [left] object exists, connect to it if it is also on
-        # TODO make if statements into a function
+        idx_row = ceil(idx/self.n)
         if idx-1 >= 0:
-            if bool(self.activated[idx-1]) and ceil((idx-1)/n) == idx_row:
-                if self.get_root(self.data[idx-1]) != self.get_root(self.data[idx]):
-                    # to prevent calling union if there is already connection (^^ tree_size)
-                    self.union(self.data[idx], self.data[idx-1])
+            connect_horizontal(idx, idx_row, -1)
         if idx+1 <= len(self.data) - 1:
-            if bool(self.activated[idx+1]) and ceil((idx+1)/n) == idx_row:
-                if self.get_root(self.data[idx+1]) != self.get_root(self.data[idx]):
-                    self.union(self.data[idx], self.data[idx+1])
-        if idx-n >= 0:
-            if bool(self.activated[idx-n]):
-                if self.get_root(self.data[idx-n]) != self.get_root(self.data[idx]):
-                    self.union(self.data[idx], self.data[idx-n])
-        if idx+n <= len(self.data) - 1:
-            if bool(self.activated[idx+n]):
-                if self.get_root(self.data[idx+n]) != self.get_root(self.data[idx]):
-                    self.union(self.data[idx], self.data[idx+n])
+            connect_horizontal(idx, idx_row, 1)
+        if idx-self.n >= 0:
+            connect_vertical(idx, -self.n)
+        if idx+self.n <= len(self.data) - 1:
+            connect_vertical(idx, self.n)
 
 
-class ParseResult():
+class ParseResult:
     def __init__(self, data):
         self.data = data
         self.trees = {}
@@ -127,10 +124,10 @@ class ParseResult():
 
 
 class DrawTree:
-    def __init__(self, root, children, outputName):
+    def __init__(self, root, children, outputPath):
         self.graph = pydot.Dot(graph_type='digraph')
         self.add_edges(root, children)
-        self.graph.write_png('../output_files/percolation/{}_root{}.png'.format(outputName,root))
+        self.graph.write_png('{path}_root_{root}.png'.format(path=outputPath, root=root))
 
     def add_edges(self, parent, children):
         for child in children:
@@ -150,8 +147,10 @@ def draw_trees(data, name):
         DrawTree(tree, parsed.trees[tree], name)
 
 if __name__ == '__main__':
-    testCase = 'input4_fails'
-    result = Percolation('{}.txt'.format(testCase))
+    fileName = 'input4_fails'
+    testPath = '../test_algorithms/TestUnionFind/test_percolation/{}.txt'.format(fileName)
+    result = Percolation(testPath)
 
     if DRAW_TREE:
-        draw_trees(result.data, testCase)
+        outputPath = '../output_files/percolation/{}'.format(fileName)
+        draw_trees(result.data, outputPath)

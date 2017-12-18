@@ -1,8 +1,9 @@
 from random import sample, seed
-
+import os
+from shutil import rmtree
 from union_find_percolation import Percolation, ParseResult, draw_trees
 
-seed(30)
+seed(15)
 
 class Percolation_MC(Percolation):
     def __init__(self, n, trials):
@@ -15,12 +16,19 @@ class Percolation_MC(Percolation):
             # hit 0.5934285 percolation threshold n=5 with seed(1220) and trials=3500
             # hit 0.5904724 percolation threshold with n=10 with seed(100) and trials=100000
             # hit 0.5920467 percolation threshold with n=20 with seed(1223) and trials=10000
-            # hit 0.5924016 percolation threshold with n=25 with seed(100) and trials=1000
+            # hit 0.5924016 percolation threshold with n=25 with seed(100) and trials=1000 (CLOSEST)
             # hit 0.5931777 percolation threshold with n=30 with seed(7) and trials=1000
             print('Trial', i + 1)
             thresholds.append(self.simulate_percolation())
             if i == trials - 1:
-                draw_trees(self.data, 'MC_test_')
+                path = '../output_files/percolation/n_{n}_t_{t}'.format(n=self.n, t=trials)
+                if os.path.exists(path):
+                    rmtree(path)
+                os.mkdir(path)
+                draw_trees(self.data, '../output_files/percolation/n_{n}_t_{t}/MC_test'.format(n=self.n, t=trials))
+
+                # TODO move all constant file paths to config file
+
             super().__init__(n=n)  # resets simulation
 
         print(thresholds)
@@ -32,10 +40,9 @@ class Percolation_MC(Percolation):
         activation_sequence = sample(range(1, num_objects + 1), num_objects)
         for obj in activation_sequence:  # sequence sampled from list of objects without replacement
             self.activated[obj] = 1
-            self.connect_surrounding(obj, self.n)
-            self.link_top_bottom(self.n)
+            self.connect_surrounding(obj)
+            self.link_top_bottom()
             #self.visualize_activated(self.n)
-            #print([i for i in range(len(self.data))])
             #print(self.data)
             #print(self.tree_size)
             parsed = ParseResult(self.data)
@@ -61,5 +68,4 @@ class Percolation_MC(Percolation):
         return size + 1  # add 1 to account for the parent
 
 
-Percolation_MC(n=20, trials=1000)
-# TODO determine how running time changes as n changes
+Percolation_MC(n=25, trials=100)

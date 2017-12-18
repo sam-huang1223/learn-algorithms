@@ -16,26 +16,18 @@ class UF:
             print(self.activated[i*n+1:(i+1)*n+1])
         print(self.activated[n*n+1])
 
-    def compress_path(self, node, root):
-        """ attempts to minimize height of the tree by setting the parent of a node equal to the root of the node """
-        while self.data[node] != node:
-            node = self.data[node]
-            self.data[node] = root
-
     def union(self, p, q):
         """ add a connection between objects p and q """
         rootp = self.get_root(p)
         rootq = self.get_root(q)
         if self.tree_size[rootp] > self.tree_size[rootq]:
             self.data[rootq] = rootp
-            #self.compress_path(q, rootp)
-            if rootp != rootq:
+            if rootp != rootq:  # do not duplicate combining tree sizes if already in the same tree
                 self.tree_size[rootp] += self.tree_size[rootq]
             else:
                 self.tree_size[rootp] += 1  # in that case, just adding 1 more node to the tree
         else:
             self.data[rootp] = rootq
-            #self.compress_path(p, rootq)
             if rootq != rootp:
                 self.tree_size[rootq] += self.tree_size[rootp]
             else:
