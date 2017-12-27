@@ -4,7 +4,14 @@
 * Trying to go the extra mile to visualize algorithm operation and/or results whenever possible
 * Trying to concurrently learn PyTest by writing tests for the implementations
 
-[Placeholder for when I figure out formatting & markdown hyperlinking for a table of contents]
+## [Table of Contents](http://doctoc.herokuapp.com/)
+
+* [Algorithms & Visualizations](#)
+    * [Union Find](#)
+	    * [Execution Instructions](#)
+		* [Algorithm Functionality](#)
+	* [Data Structures](#)
+		* [Stacks](#)
 
 ## Union Find
 Implementation based on [Assignment 1 - Percolation](http://coursera.cs.princeton.edu/algs4/assignments/percolation.html)

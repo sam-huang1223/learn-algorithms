@@ -23,3 +23,9 @@ class TestUnionFind:
         result = Percolation('test_algorithms/TestUnionFind/test_percolation/{}.txt'.format(inputName))
         assert result.connected(result.data[0], result.data[-1]) == result.succeeds, "Percolation result does not match file input"
 
+
+class TestDataStructures:
+
+    @staticmethod
+    def test_stack():
+        pass

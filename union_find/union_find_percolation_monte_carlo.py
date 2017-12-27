@@ -8,11 +8,10 @@ seed(15)
 
 class Percolation_MC(Percolation):
     def __init__(self, n, trials):
-        super().__init__(n=n)  # initializes all sites to be off
-        self.n = n
         thresholds = []
 
         for i in range(trials):
+            super().__init__(n=n)  # resets simulation
             # http://mathworld.wolfram.com/PercolationThreshold.html (target =	0.592746)
             # hit 0.5934285 percolation threshold n=5 with seed(1220) and trials=3500
             # hit 0.5904724 percolation threshold with n=10 with seed(100) and trials=100000
@@ -30,11 +29,8 @@ class Percolation_MC(Percolation):
                     os.mkdir(path)
                     draw_trees(self.data, '../output_files/percolation/n_{n}_t_{t}/MC_test'.format(n=self.n, t=trials))
 
-            super().__init__(n=n)  # resets simulation
-
         print(thresholds)
         print(sum(thresholds)/len(thresholds))
-
 
     def simulate_percolation(self):
         num_objects = self.n*self.n
@@ -43,11 +39,11 @@ class Percolation_MC(Percolation):
             self.activated[obj] = 1
             self.connect_surrounding(obj)
             self.link_top_bottom()
-            #self.visualize_activated(self.n)
-            #print(self.data)
-            #print(self.tree_size)
+            # self.visualize_activated(self.n)
+            # print(self.data)
+            # print(self.tree_size)
             parsed = ParseResult(self.data)
-            #print(parsed.trees)
+            # print(parsed.trees)
 
             # error check ParseResult
             for root, expected_size in enumerate(self.tree_size):
