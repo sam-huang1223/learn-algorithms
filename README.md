@@ -4,14 +4,12 @@
 * Trying to go the extra mile to visualize algorithm operation and/or results whenever possible
 * Trying to concurrently learn PyTest by writing tests for the implementations
 
-## [Table of Contents](http://doctoc.herokuapp.com/)
+## Table of Contents
 
-* [Algorithms & Visualizations](#)
-    * [Union Find](#)
-	    * [Execution Instructions](#)
-		* [Algorithm Functionality](#)
-	* [Data Structures](#)
-		* [Stacks](#)
+* [Algorithms & Visualizations](#algorithms--visualizations)
+    * [Union Find](#union-find)
+	    * [Execution Instructions](#execution-instructions)
+		* [Algorithm Functionality](#algorithm-functionality)
 
 ## Union Find
 Implementation based on [Assignment 1 - Percolation](http://coursera.cs.princeton.edu/algs4/assignments/percolation.html)
@@ -35,7 +33,4 @@ Implementation based on [Assignment 1 - Percolation](http://coursera.cs.princeto
 * **simulate_percolation**: generates a random sequence of objects to activate, checks for percolation at each object activation, and returns the percolation threshold once percolation is detected
 * **visualize_activated**: visualizes the grid of activated and non-activated objects
 
-## Data Structures
-#### Stacks
-_
 
