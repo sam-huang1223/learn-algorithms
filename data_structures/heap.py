@@ -1,6 +1,7 @@
 """
 Implementation of a max heap
 """
+import numpy as np
 
 def build_max_heap():
     ''' returns a max heap from an unordered array'''
@@ -9,8 +10,6 @@ def build_max_heap():
     def max_heapify():
         ''' correct a single violation of the heap property in a subtree '''
         pass
-
-
 
 build_max_heap()
 
@@ -56,5 +55,19 @@ class Max_Heap:
             self.heap[idx], self.heap[parent_idx] = self.heap[parent_idx], self.heap[idx]
             return self._bubble_up(idx=parent_idx)
 
+if __name__ == '__main__':
+    # [10, 9, 7, 6, 3, 6, 5, 4]
+    h = Max_Heap()
+    h.insert(4)
+    h.insert(5)
+    h.insert(6)
+    h.insert(6)
+    h.insert(3)
+    h.insert(7)
+    h.insert(9)
+    h.insert(10)
+    print(h.heap)
+    print(h.extract())
+    print(h.heap)
 
 

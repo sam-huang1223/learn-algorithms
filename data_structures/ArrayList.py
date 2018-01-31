@@ -1,4 +1,10 @@
+import numpy as np
+
 class arrayList:
+    '''
+    Every operation takes constant amortized time
+    Minimize wasted space (halve size of array when 1/4 full - not 1/2 to prevent thrashing)
+    '''
     def __init__(self):
         ''' a dynamically resizing array that captures benefits arrays while offering flexibility in size '''
         self.array = np.zeros(shape=1, dtype=int)
@@ -23,3 +29,13 @@ class arrayList:
 
         self.array[self.counter] = value
         self.counter += 1
+
+if __name__ == '__main__':
+    al = arrayList()
+    print(al.array)
+    al.insert(10)
+    print(al.array)
+    al.insert(20)
+    print(al.array)
+    al.insert(30)
+    print(al.array)

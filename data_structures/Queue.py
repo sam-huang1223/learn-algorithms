@@ -5,8 +5,11 @@ class Queue:
         else:
             self.queue = list(queue)
 
-    def dequeue(self):
+    def pop(self):
         return self.queue.pop(0)
 
-    def enqueue(self, element):
+    def push(self, element):
         self.queue.append(element)
+
+    def get_size(self):
+        return len(self.queue)
