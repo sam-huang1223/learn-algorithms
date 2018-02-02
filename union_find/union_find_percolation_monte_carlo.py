@@ -1,8 +1,10 @@
 from random import sample, seed
 import os
 from shutil import rmtree
-from union_find_percolation import Percolation, ParseResult, draw_trees
-from config import DRAW_TREE, set_graphviz_path
+
+from union_find_percolation import Percolation
+from utils.visualize_tree import PercolationParseResult, draw_trees
+from config import DRAW_TREE
 
 seed(15)
 
@@ -22,12 +24,12 @@ class Percolation_MC(Percolation):
             thresholds.append(self.simulate_percolation())
             if DRAW_TREE:
                 if i == trials - 1:
-                    set_graphviz_path()
                     path = '../output_files/percolation/n_{n}_t_{t}'.format(n=self.n, t=trials)
                     if os.path.exists(path):
                         rmtree(path)
                     os.mkdir(path)
-                    draw_trees(self.data, '../output_files/percolation/n_{n}_t_{t}/MC_test'.format(n=self.n, t=trials))
+                    parsed = PercolationParseResult(self.data)
+                    draw_trees(parsed.trees, outputPath='../output_files/percolation/n_{n}_t_{t}/MC_test'.format(n=self.n, t=trials))
 
         print(thresholds)
         print(sum(thresholds)/len(thresholds))
@@ -42,7 +44,7 @@ class Percolation_MC(Percolation):
             # self.visualize_activated(self.n)
             # print(self.data)
             # print(self.tree_size)
-            parsed = ParseResult(self.data)
+            parsed = PercolationParseResult(self.data)
             # print(parsed.trees)
 
             # error check ParseResult

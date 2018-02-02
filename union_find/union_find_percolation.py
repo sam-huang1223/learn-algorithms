@@ -1,8 +1,7 @@
-import pydotplus as pydot
 from math import ceil
 from union_find import UF
-from config import DRAW_TREE, set_graphviz_path
-
+from config import DRAW_TREE
+from utils.visualize_tree import draw_trees, PercolationParseResult
 
 class Percolation(UF):
     def __init__(self, inputPath=None, n=0):
@@ -76,74 +75,6 @@ class Percolation(UF):
             connect_vertical(idx, self.n)
 
 
-class ParseResult:
-    def __init__(self, data):
-        self.data = data
-        self.trees = {}
-        self.get_all_trees()
-
-    def get_all_trees(self):
-        for idx, parent in enumerate(self.data):
-            if parent != idx:
-                if parent not in self.trees.keys():
-                    self.trees[parent] = set()
-
-        for idx in range(len(self.data)):
-            if self.data[idx] in self.trees.keys() and self.data[idx] != idx:
-                self.trees[self.data[idx]].add(idx)
-        self._aggregate()
-
-    def _aggregate(self):
-        while True:
-            subtrees_found = False
-            for root in set(self.trees.keys()):
-                subtrees = self.trees[root].intersection(set(self.trees.keys()))
-                for subtree in subtrees:
-                    if not self._verify_updated(subtree):
-                        continue
-                    self.trees[root].remove(subtree)
-                    self.trees[root].add((subtree,) + tuple(self.trees[subtree]))
-                    # make subtree parent first element of the tuple
-                if subtrees:
-                    subtrees_found = True
-                    continue
-            if not subtrees_found:  # if for loop was never broken
-                break
-
-    def _verify_updated(self, subtree):
-        for element in self.trees[subtree]:
-            if isinstance(element, tuple):
-                if not self._verify_updated(element[0]):
-                    return False
-            elif element in self.trees.keys():
-                return False
-        return True
-
-
-class DrawTree:
-    def __init__(self, root, children, outputPath):
-        self.graph = pydot.Dot(graph_type='digraph')
-        self.add_edges(root, children)
-        self.graph.write_png('{path}_root_{root}.png'.format(path=outputPath, root=root))
-
-    def add_edges(self, parent, children):
-        for child in children:
-            if isinstance(child, tuple):
-                self.graph.add_edge(pydot.Edge(parent, child[0]))
-                self.add_edges(child[0], child[1:])  # first item of tuple is root of subtree
-            else:
-                self.graph.add_edge(pydot.Edge(parent, child))
-
-# TODO document this
-
-
-def draw_trees(data, name):
-    set_graphviz_path()
-    parsed = ParseResult(data)
-    for num, tree in enumerate(parsed.trees.keys()):
-        DrawTree(tree, parsed.trees[tree], name)
-
-
 if __name__ == '__main__':
     fileName = 'input4_fails'
     testPath = '../test_algorithms/TestUnionFind/test_percolation/{}.txt'.format(fileName)
@@ -151,4 +82,5 @@ if __name__ == '__main__':
 
     if DRAW_TREE:
         outputPath = '../output_files/percolation/{}'.format(fileName)
-        draw_trees(result.data, outputPath)
+        parsed = PercolationParseResult(result.data)
+        draw_trees(parsed.trees, outputPath=outputPath)
