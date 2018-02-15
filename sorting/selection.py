@@ -6,10 +6,10 @@ Invariants: elements left of pointer is sorted, elements to the right are unknow
 """
 
 from sorting import RANDOM_ARRAY
-from utils import timing
+from utils import time_functions
 
 
-@timing.timeit_1x
+@time_functions.timeit_1x
 def selection_sort(arr):
     """ensures first i elements are sorted (first i elements are first i minimums of the array)"""
     for i in range(len(arr)):
