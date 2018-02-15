@@ -11,3 +11,4 @@ For partially sorted arrays, insertion sort is O(n) (# exchanges = # inversions)
 
 Invariants: elements to the left of the pointer are in ascending order, elements to the right are unknown
 """
+

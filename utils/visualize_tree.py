@@ -24,8 +24,6 @@ class PercolationParseResult:
                 if parent not in self.trees.keys():
                     self.trees[parent] = set()
 
-
-
         for idx in range(len(self.data)):
             if self.data[idx] in self.trees.keys() and self.data[idx] != idx:
                 self.trees[self.data[idx]].add(idx)
@@ -62,6 +60,7 @@ class NodeAttributes:  # can be replaced with a dataclass from Python 3.7
     def __init__(self, edge_color):
         self.edge_color = edge_color
 
+## TODO test graph visualization using DrawTree functions
 
 class DrawTree:
     def __init__(self, root, children, node_attributes, outputPath):
@@ -70,6 +69,10 @@ class DrawTree:
         self.graph.write_png('{path}_root_{root}.png'.format(path=outputPath, root=root))
 
     def add_edges(self, parent, children, node_attributes):
+
+        # TODO convert all items in children set to objects (with value + node_attributes attributes)
+        # TODO convert children set to list (as order matters in left leaning red black BSTs)
+
         for child, attributes in zip_longest(children, node_attributes):
             if isinstance(child, tuple):
                 color = attributes[0].edge_color if isinstance(attributes, tuple) else 'black'
